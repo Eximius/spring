@@ -1211,7 +1211,22 @@ void CGroundMoveType::GetNextWayPoint()
 		const int dirSign = int(!reversing) * 2 - 1;
 
 		#if (WAYPOINT_SKIP_TEST_GODDE == 1)
-		if (waypointDir.dot(flatFrontDir * dirSign) >= 0.0f) {
+		// condition #1
+		//   "when the unit is turning it should skip waypoints if
+		//   the waypoints are within 180 degrees in the direction
+		//   of movement."
+		//   -->
+		//   only waypoints in front of the unit should ever be
+		//   skipped (but not unless condition #2 is also true)
+		if (waypointDir.dot(flatFrontDir * dirSign) < 0.0f) {
+			return;
+		}
+		// condition #2
+		//   "waypoints should be skipped when they are within
+		//   1.1 times the turn radius of the current speed."
+		//   -->
+		//   waypoints further away should never be skipped
+		if (currWayPointDist > (turnRadius * 1.1f)) {
 			return;
 		}
 		#else
