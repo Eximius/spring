@@ -1208,6 +1208,7 @@ void CGroundMoveType::GetNextWayPoint()
 		// to prevent sine-like "snaking" trajectories
 		const float turnFrames = SPRING_CIRCLE_DIVS / turnRate;
 		const float turnRadius = (owner->speed.Length() * turnFrames) / (PI + PI);
+		const float waypointDot = waypointDir.dot(flatFrontDir * dirSign);
 		const int dirSign = int(!reversing) * 2 - 1;
 
 		#if (WAYPOINT_SKIP_TEST_GODDE == 1)
@@ -1215,10 +1216,11 @@ void CGroundMoveType::GetNextWayPoint()
 		//   "when the unit is turning it should skip waypoints if
 		//   the waypoints are within 180 degrees in the direction
 		//   of movement."
+		//   "when the unit is moving straight, it shouldn't"
 		//   -->
 		//   only waypoints in front of the unit should ever be
 		//   skipped (but not unless condition #2 is also true)
-		if (waypointDir.dot(flatFrontDir * dirSign) < 0.0f) {
+		if (waypointDot > 0.995f || waypointDot < 0.0f) {
 			return;
 		}
 		// condition #2
@@ -1233,7 +1235,7 @@ void CGroundMoveType::GetNextWayPoint()
 		if (currWayPointDist > (turnRadius * 2.0f)) {
 			return;
 		}
-		if (currWayPointDist > MIN_WAYPOINT_DISTANCE && waypointDir.dot(flatFrontDir * dirSign) >= 0.995f) {
+		if (currWayPointDist > MIN_WAYPOINT_DISTANCE && waypointDot >= 0.995f) {
 			return;
 		}
 		#endif
