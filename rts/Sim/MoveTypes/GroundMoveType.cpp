@@ -1200,6 +1200,8 @@ void CGroundMoveType::GetNextWayPoint()
 		geometricObjects->SetColor(nwpFigGroupID, 1, 0.3f, 0.3f, 0.6f);
 		#endif
 
+		const int dirSign = int(!reversing) * 2 - 1;
+
 		// perform a turn-radius check: if the waypoint
 		// lies outside our turning circle, don't skip
 		// it (since we can steer toward this waypoint
@@ -1209,7 +1211,6 @@ void CGroundMoveType::GetNextWayPoint()
 		const float turnFrames = SPRING_CIRCLE_DIVS / turnRate;
 		const float turnRadius = (owner->speed.Length() * turnFrames) / (PI + PI);
 		const float waypointDot = waypointDir.dot(flatFrontDir * dirSign);
-		const int dirSign = int(!reversing) * 2 - 1;
 
 		#if (WAYPOINT_SKIP_TEST_GODDE == 1)
 		// condition #1
